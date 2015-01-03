@@ -35,8 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/870677350/yl_memory_file.o \
-	${OBJECTDIR}/main.o
+	${OBJECTDIR}/_ext/378967805/yl_memory_file.o
 
 # Test Directory
 TESTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tests
@@ -63,21 +62,18 @@ LDLIBSOPTIONS=-lm
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/consolememoryfile
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libyl_memory_file_test.a
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/consolememoryfile: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libyl_memory_file_test.a: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/consolememoryfile ${OBJECTFILES} ${LDLIBSOPTIONS}
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libyl_memory_file_test.a
+	${AR} -rv ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libyl_memory_file_test.a ${OBJECTFILES} 
+	$(RANLIB) ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libyl_memory_file_test.a
 
-${OBJECTDIR}/_ext/870677350/yl_memory_file.o: ../ConsoleTest/yl_memory_file.c 
-	${MKDIR} -p ${OBJECTDIR}/_ext/870677350
+${OBJECTDIR}/_ext/378967805/yl_memory_file.o: ../yl_memory_file/yl_memory_file.c 
+	${MKDIR} -p ${OBJECTDIR}/_ext/378967805
 	${RM} "$@.d"
-	$(COMPILE.c) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/870677350/yl_memory_file.o ../ConsoleTest/yl_memory_file.c
-
-${OBJECTDIR}/main.o: main.c 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.c) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.c
+	$(COMPILE.c) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/378967805/yl_memory_file.o ../yl_memory_file/yl_memory_file.c
 
 # Subprojects
 .build-subprojects:
@@ -95,30 +91,17 @@ ${TESTDIR}/tests/yl_memory_file_test.o: tests/yl_memory_file_test.c
 	$(COMPILE.c) -g -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/yl_memory_file_test.o tests/yl_memory_file_test.c
 
 
-${OBJECTDIR}/_ext/870677350/yl_memory_file_nomain.o: ${OBJECTDIR}/_ext/870677350/yl_memory_file.o ../ConsoleTest/yl_memory_file.c 
-	${MKDIR} -p ${OBJECTDIR}/_ext/870677350
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/_ext/870677350/yl_memory_file.o`; \
+${OBJECTDIR}/_ext/378967805/yl_memory_file_nomain.o: ${OBJECTDIR}/_ext/378967805/yl_memory_file.o ../yl_memory_file/yl_memory_file.c 
+	${MKDIR} -p ${OBJECTDIR}/_ext/378967805
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/_ext/378967805/yl_memory_file.o`; \
 	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.c) -g -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/870677350/yl_memory_file_nomain.o ../ConsoleTest/yl_memory_file.c;\
+	    $(COMPILE.c) -g -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/378967805/yl_memory_file_nomain.o ../yl_memory_file/yl_memory_file.c;\
 	else  \
-	    ${CP} ${OBJECTDIR}/_ext/870677350/yl_memory_file.o ${OBJECTDIR}/_ext/870677350/yl_memory_file_nomain.o;\
-	fi
-
-${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.c 
-	${MKDIR} -p ${OBJECTDIR}
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/main.o`; \
-	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
-	then  \
-	    ${RM} "$@.d";\
-	    $(COMPILE.c) -g -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main_nomain.o main.c;\
-	else  \
-	    ${CP} ${OBJECTDIR}/main.o ${OBJECTDIR}/main_nomain.o;\
+	    ${CP} ${OBJECTDIR}/_ext/378967805/yl_memory_file.o ${OBJECTDIR}/_ext/378967805/yl_memory_file_nomain.o;\
 	fi
 
 # Run Test Targets
@@ -133,7 +116,7 @@ ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.c
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/consolememoryfile
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libyl_memory_file_test.a
 
 # Subprojects
 .clean-subprojects:

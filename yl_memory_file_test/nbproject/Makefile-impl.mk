@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=ConsoleMemoryFile
+PROJECTNAME=yl_memory_file_test
 
 # Active Configuration
 DEFAULTCONF=Debug

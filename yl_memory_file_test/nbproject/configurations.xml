@@ -4,7 +4,7 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>../ConsoleTest/yl_memory_file.h</itemPath>
+      <itemPath>../yl_memory_file/yl_memory_file.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -13,8 +13,7 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>main.c</itemPath>
-      <itemPath>../ConsoleTest/yl_memory_file.c</itemPath>
+      <itemPath>../yl_memory_file/yl_memory_file.c</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -36,22 +35,19 @@
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
-    <conf name="Debug" type="1">
+    <conf name="Debug" type="3">
       <toolsSet>
         <compilerSet>default</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
-        <linkerTool>
-          <linkerLibItems>
-            <linkerLibStdlibItem>Mathematics</linkerLibStdlibItem>
-          </linkerLibItems>
-        </linkerTool>
+        <archiverTool>
+        </archiverTool>
       </compileType>
-      <item path="../ConsoleTest/yl_memory_file.c" ex="false" tool="0" flavor2="0">
+      <item path="../yl_memory_file/yl_memory_file.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="../ConsoleTest/yl_memory_file.h" ex="false" tool="3" flavor2="0">
+      <item path="../yl_memory_file/yl_memory_file.h" ex="false" tool="3" flavor2="0">
       </item>
       <folder path="TestFiles/f1">
         <linkerTool>
@@ -61,8 +57,6 @@
           </linkerLibItems>
         </linkerTool>
       </folder>
-      <item path="main.c" ex="false" tool="0" flavor2="0">
-      </item>
       <item path="tests/yl_memory_file_test.c" ex="false" tool="0" flavor2="0">
       </item>
     </conf>
@@ -91,9 +85,9 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
-      <item path="../ConsoleTest/yl_memory_file.c" ex="false" tool="0" flavor2="0">
+      <item path="../yl_memory_file/yl_memory_file.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="../ConsoleTest/yl_memory_file.h" ex="false" tool="3" flavor2="0">
+      <item path="../yl_memory_file/yl_memory_file.h" ex="false" tool="3" flavor2="0">
       </item>
       <folder path="TestFiles/f1">
         <linkerTool>
@@ -103,8 +97,6 @@
           </linkerLibItems>
         </linkerTool>
       </folder>
-      <item path="main.c" ex="false" tool="0" flavor2="0">
-      </item>
       <item path="tests/yl_memory_file_test.c" ex="false" tool="0" flavor2="0">
       </item>
     </conf>

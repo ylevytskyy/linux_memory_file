@@ -39,6 +39,9 @@ static inline void free(void *ptr)
 #include <math.h>
 #include <assert.h>
 
+#define copy_from_user memcpy
+#define copy_to_user   memcpy
+
 #endif // __KERNEL__
 
 struct yl_memory_file {
