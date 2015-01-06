@@ -46,12 +46,11 @@ static inline void free(void *ptr)
 
 struct yl_memory_file {
    char *buffer;
-   unsigned buffer_size;
-   unsigned written;
-   unsigned read;
+   long long buffer_size;
+   long long written;
 };
 
-static char *do_ylmf_alloc(unsigned count) {
+static char *do_ylmf_alloc(long long count) {
    char *buffer;
 
    assert(count > 0);
@@ -62,7 +61,7 @@ static char *do_ylmf_alloc(unsigned count) {
    return buffer;
 }
 
-static char *do_ylmf_realloc(char *buffer, unsigned count) {
+static char *do_ylmf_realloc(char *buffer, long long count) {
    assert(count > 0);
 
    buffer = (char *) realloc(buffer, count);
@@ -81,7 +80,7 @@ static void do_ylmf_free(void **buffer) {
    }
 }
 
-static void do_ylfm_memclear(char *buffer, unsigned count) {
+static void do_ylfm_memclear(char *buffer, long long count) {
    assert(NULL != buffer);
 
    if (NULL != buffer) {
@@ -103,7 +102,7 @@ static struct yl_memory_file *do_ylmf_create(unsigned object_size) {
    return instance;
 }
 
-struct yl_memory_file *ylmf_create_with_buffer_size(unsigned buffer_size) {
+struct yl_memory_file *ylmf_create_with_buffer_size(long long buffer_size) {
    unsigned object_size;
    struct yl_memory_file *instance;
    char *buffer;
@@ -138,8 +137,8 @@ void ylmf_destroy(struct yl_memory_file **instance) {
    }
 }
 
-unsigned ylmf_get_buffer_size(struct yl_memory_file *instance) {
-   unsigned buffer_size;
+long long ylmf_get_buffer_size(struct yl_memory_file *instance) {
+   long long buffer_size;
 
    assert(NULL != instance);
 
@@ -150,7 +149,7 @@ unsigned ylmf_get_buffer_size(struct yl_memory_file *instance) {
    return buffer_size;
 }
 
-int ylmf_set_buffer_size(struct yl_memory_file *instance, unsigned buffer_size) {
+int ylmf_set_buffer_size(struct yl_memory_file *instance, long long buffer_size) {
    int result;
 
    assert(NULL != instance);
@@ -170,33 +169,20 @@ int ylmf_set_buffer_size(struct yl_memory_file *instance, unsigned buffer_size) 
    return result;
 }
 
-unsigned ylmf_get_buffer_available(struct yl_memory_file *instance) {
-   unsigned available = 0;
+long long ylmf_get_buffer_written(struct yl_memory_file *instance) {
+   unsigned written = 0;
    
    assert(NULL != instance);
    
    if (NULL != instance) {
-      available = instance->written - instance->read;
+      written = instance->written;
    }
    
-   return available;
+   return written;
 }
 
-static unsigned try_to_move(struct yl_memory_file *instance, unsigned count) {
-   unsigned available;
-   
-   available = instance->buffer_size - instance->written;
-   if (available < count) {
-      unsigned bytes_to_move;
-      
-      bytes_to_move = ylmf_get_buffer_available(instance);
-      memmove(instance->buffer, instance->buffer + instance->read, bytes_to_move);
-      
-      instance->read = 0;
-      instance->written = bytes_to_move;
-   }
-
-   available = instance->buffer_size - instance->written;
+static inline long long get_available(struct yl_memory_file *instance) {
+   long long available = instance->buffer_size - instance->written;
    return available;
 }
 
@@ -206,19 +192,34 @@ unsigned ylmf_write(struct yl_memory_file *instance, const char *data, unsigned 
    assert(NULL != instance);
    
    written = 0;
-   if (NULL != instance) {
-      unsigned available;
+   if ((NULL != instance) && (NULL != offset)) {
+      long long available;
 
       assert(NULL != instance->buffer);
       assert(instance->buffer_size >= instance->written);
 
-      available = try_to_move(instance, count);
+      available = get_available(instance);
+//      printk(KERN_INFO "available: %ll\n", available);
+      if (available < count) {
+         int result = 0;
+         long long new_buffer_size = instance->written + count;
 
-      written = fmin(count, available);
-      copy_from_user(instance->buffer + instance->written, data, written);
-      instance->written += written;
-      
-      *offset += written;
+	      result = ylmf_set_buffer_size(instance, new_buffer_size);
+         if (result >= 0) {
+            available = get_available(instance);
+         }
+         else {
+            available = -1;
+         }
+      }
+
+      if (available > 0) {
+         written = fmin(count, available);
+         copy_from_user(instance->buffer + instance->written, data, written);
+         instance->written += written;
+
+         *offset += written;
+      }
    }
 
    return written;
@@ -228,20 +229,19 @@ unsigned ylmf_read(struct yl_memory_file *instance, char *buffer, unsigned count
    unsigned read;
 
    assert(NULL != instance);
+   assert(NULL != offset);
    
    read = 0;
-   if (NULL != instance) {
-      unsigned available;
-
+   if ((NULL != instance) && (NULL != offset)) {
       assert(NULL != instance->buffer);
-      
-      available = ylmf_get_buffer_available(instance);
-      
-      read = fmin(count, available);
-      copy_to_user(buffer, instance->buffer + instance->read, read);
-      instance->read += read;
-      
-      *offset += read;
+
+      if (instance->written > *offset) {
+         long long available = instance->written - *offset;
+
+         read = fmin(count, available);
+         copy_to_user(buffer, instance->buffer + *offset, read);
+         *offset += read;
+      }
    }
    
    return read;

@@ -68,8 +68,8 @@ static void do_test_simple_read_write(struct yl_memory_file *memory_file,
    long long write_offset = 0, read_offset = 0;
    for (i = 0; i < 1; ++i) {
       ylmf_write(memory_file, write_buffer, write_buffer_size, &write_offset);
-      unsigned available = ylmf_get_buffer_available(memory_file);
-      CU_ASSERT_EQUAL(available, write_buffer_size);
+      unsigned written = ylmf_get_buffer_written(memory_file);
+      CU_ASSERT_EQUAL(written, write_buffer_size);
 
       unsigned read_count = ylmf_read(memory_file, read_buffer, buffer_size, &read_offset);
       CU_ASSERT_EQUAL(read_count, write_buffer_size);
@@ -77,8 +77,8 @@ static void do_test_simple_read_write(struct yl_memory_file *memory_file,
       int compare_result = memcmp(read_buffer, write_buffer, read_count);
       CU_ASSERT_EQUAL_FATAL(compare_result, 0);
 
-      available = ylmf_get_buffer_available(memory_file);
-      CU_ASSERT_EQUAL(available, 0);
+      written = ylmf_get_buffer_written(memory_file);
+      CU_ASSERT_EQUAL(written, write_buffer_size);
    }
    
    free(read_buffer);
@@ -103,7 +103,7 @@ void test_buffer_simple_read_write() {
 }
 
 void test_buffer_read_write1() {
-   static const int default_buffer_size = 64;
+   static const int default_buffer_size = 1;
 
    struct yl_memory_file *memory_file = ylmf_create_with_buffer_size(default_buffer_size);
    if (NULL != memory_file) {
@@ -111,7 +111,6 @@ void test_buffer_read_write1() {
 
       int i;
       long long write_offset = 0, read_offset = 0;
-      long long second_write_offset = 0, second_read_offset = 0;
       for (i = 0; i < 1; ++i) {
          static const char first_write_buffer[] = "My first test buffer";
          static const unsigned first_write_buffer_size = sizeof (first_write_buffer) / sizeof (first_write_buffer[0]);
@@ -120,37 +119,32 @@ void test_buffer_read_write1() {
          static const unsigned second_write_buffer_size = sizeof (second_write_buffer) / sizeof (second_write_buffer[0]);
 
          // Write first buffer
-         ylmf_write(memory_file, first_write_buffer, first_write_buffer_size, &write_offset);
-         unsigned available = ylmf_get_buffer_available(memory_file);
-         CU_ASSERT_EQUAL_FATAL(available, first_write_buffer_size);
+         unsigned written = ylmf_write(memory_file, first_write_buffer, first_write_buffer_size, &write_offset);
+         CU_ASSERT_EQUAL_FATAL(written, first_write_buffer_size);
 
          //
          // Read first test
-         char read_buffer[default_buffer_size];
+         unsigned read_buffer_size = first_write_buffer_size + second_write_buffer_size;
+         char *read_buffer = (char *) malloc(read_buffer_size);
          unsigned read_count = ylmf_read(memory_file, read_buffer, first_write_buffer_size, &read_offset);
          CU_ASSERT_EQUAL_FATAL(read_count, first_write_buffer_size);
-         
-         available = ylmf_get_buffer_available(memory_file);
-         CU_ASSERT_EQUAL_FATAL(available, 0);
          
          int compare_result = memcmp(read_buffer, first_write_buffer, read_count);
          CU_ASSERT_EQUAL_FATAL(compare_result, 0);
          
          // Write second buffer
-         ylmf_write(memory_file, second_write_buffer, second_write_buffer_size, &second_write_offset);
-         available = ylmf_get_buffer_available(memory_file);
-         CU_ASSERT_EQUAL_FATAL(available, second_write_buffer_size);
+         written = ylmf_write(memory_file, second_write_buffer, second_write_buffer_size, &write_offset);
+         CU_ASSERT_EQUAL_FATAL(written, second_write_buffer_size);
          
          //
          // Read second test
-         read_count = ylmf_read(memory_file, read_buffer, second_write_buffer_size, &second_read_offset);
+         read_count = ylmf_read(memory_file, read_buffer, second_write_buffer_size, &read_offset);
          CU_ASSERT_EQUAL(read_count, second_write_buffer_size);
-
-         available = ylmf_get_buffer_available(memory_file);
-         CU_ASSERT_EQUAL_FATAL(available, 0);
 
          compare_result = memcmp(read_buffer, second_write_buffer, read_count);
          CU_ASSERT_EQUAL_FATAL(compare_result, 0);
+
+         free (read_buffer);
       }
 
       ylmf_destroy(&memory_file);
@@ -161,7 +155,7 @@ void test_buffer_read_write1() {
 }
 
 void test_buffer_read_write2() {
-   static const int default_buffer_size = 128;
+   static const int default_buffer_size = 4;
 
    struct yl_memory_file *memory_file = ylmf_create_with_buffer_size(default_buffer_size);
    if (NULL != memory_file) {
@@ -169,7 +163,6 @@ void test_buffer_read_write2() {
 
       int i;
       long long write_offset = 0, read_offset = 0;
-      long long second_write_offset = 0, second_read_offset = 0;
       for (i = 0; i < 1; ++i) {
          static const char first_write_buffer[] = "My first test buffer";
          static const unsigned first_write_buffer_size = sizeof (first_write_buffer) / sizeof (first_write_buffer[0]);
@@ -178,37 +171,32 @@ void test_buffer_read_write2() {
          static const unsigned second_write_buffer_size = sizeof (second_write_buffer) / sizeof (second_write_buffer[0]);
 
          // Write first buffer
-         ylmf_write(memory_file, first_write_buffer, first_write_buffer_size, &write_offset);
-         unsigned available = ylmf_get_buffer_available(memory_file);
-         CU_ASSERT_EQUAL_FATAL(available, first_write_buffer_size);
+         unsigned written = ylmf_write(memory_file, first_write_buffer, first_write_buffer_size, &write_offset);
+         CU_ASSERT_EQUAL_FATAL(written, first_write_buffer_size);
 
          // Write second buffer
-         ylmf_write(memory_file, second_write_buffer, second_write_buffer_size, &second_write_offset);
-         available = ylmf_get_buffer_available(memory_file);
-         CU_ASSERT_EQUAL_FATAL(available, first_write_buffer_size + second_write_buffer_size);
+         written = ylmf_write(memory_file, second_write_buffer, second_write_buffer_size, &write_offset);
+         CU_ASSERT_EQUAL_FATAL(written, second_write_buffer_size);
          
          //
          // Read first test
-         char read_buffer[default_buffer_size];
+         unsigned read_buffer_size = first_write_buffer_size + second_write_buffer_size;
+         char *read_buffer = (char *) malloc(read_buffer_size);
          unsigned read_count = ylmf_read(memory_file, read_buffer, first_write_buffer_size, &read_offset);
          CU_ASSERT_EQUAL_FATAL(read_count, first_write_buffer_size);
-         
-         available = ylmf_get_buffer_available(memory_file);
-         CU_ASSERT_EQUAL_FATAL(available, second_write_buffer_size);
          
          int compare_result = memcmp(read_buffer, first_write_buffer, read_count);
          CU_ASSERT_EQUAL_FATAL(compare_result, 0);
          
          //
          // Read second test
-         read_count = ylmf_read(memory_file, read_buffer, second_write_buffer_size, &second_read_offset);
+         read_count = ylmf_read(memory_file, read_buffer, second_write_buffer_size, &read_offset);
          CU_ASSERT_EQUAL(read_count, second_write_buffer_size);
-
-         available = ylmf_get_buffer_available(memory_file);
-         CU_ASSERT_EQUAL_FATAL(available, 0);
 
          compare_result = memcmp(read_buffer, second_write_buffer, read_count);
          CU_ASSERT_EQUAL_FATAL(compare_result, 0);
+
+         free (read_buffer);
       }
 
       ylmf_destroy(&memory_file);

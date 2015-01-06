@@ -47,12 +47,11 @@ static int my_close(struct inode *i, struct file *f)
   return SUCCESS;
 }
 
-static ssize_t my_read(struct file *f, char __user *buf, size_t
-  len, loff_t *off)
+static ssize_t my_read(struct file *f, char __user *buf, size_t len, loff_t *off)
 {
    ssize_t read_count;
 	
-   printk(KERN_INFO "Driver: read()\n");
+   printk(KERN_INFO "Driver: read() len=%lu; off=%llu \n", len, (unsigned long long)(*off));
   
    read_count = ylmf_read(memory_file, buf, len, off);
   
@@ -63,9 +62,11 @@ static ssize_t my_write(struct file *f, const char __user *buf, size_t len, loff
 {
 	ssize_t written_count;
 	
-   printk(KERN_INFO "Driver: write()\n");
+   printk(KERN_INFO "BEFORE Driver: write() len=%lu; off=%llu \n", len, (unsigned long long)(*off));
    
    written_count = ylmf_write(memory_file, buf, len, off);
+
+   printk(KERN_INFO "AFTER Driver: write() len=%lu; off=%llu written_count=%lu\n", len, (unsigned long long)(*off), written_count);
   
    return written_count;
 }
@@ -116,10 +117,10 @@ static int __init ylvfs_driver_init(void)
 	
    printk(KERN_INFO "Registered virtual file system\n");
    
-   major = first;
+   major = MAJOR(first);
    printk(KERN_INFO "I was assigned major number %d. To talk to\n", major);
 	printk(KERN_INFO "the driver, create a dev file with\n");
-	printk(KERN_INFO "'mknod /dev/%s c %d 0'.\n", DEVICE_NAME, major);
+	printk(KERN_INFO "'mknod /dev/%s c %d %d\n", DEVICE_NAME, major, MINOR(first));
 	printk(KERN_INFO "Try various minor numbers. Try to cat and echo to\n");
 	printk(KERN_INFO "the device file.\n");
 	printk(KERN_INFO "Remove the device file and module when done.\n");
